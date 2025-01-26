@@ -66,14 +66,17 @@ def predict():
             passengers
         ]])[0]
         
+        # Ensure emission is non-negative using absolute value
+        prediction = abs(prediction)
+        
         # Calculate eco metrics
-        efficiency_score = max(0, 100 - (prediction/20))
-        rewards = int(max(0, 1000 - prediction)/100)
+        efficiency_score = max(0, 100 - (prediction / 20))
+        rewards = int(max(0, 1000 - prediction) / 100)
         vehicle_stats = VEHICLE_EFFICIENCY[vehicle_type]
         
         return jsonify({
             'emission': round(prediction, 2),
-            'unit': 'million tons CO2',
+            'unit': 'tons CO2',
             'recommendations': get_recommendations(prediction, vehicle_type),
             'eco_score': round(efficiency_score, 1),
             'rewards_earned': rewards,
@@ -84,8 +87,8 @@ def predict():
             },
             'journey_stats': {
                 'efficiency_level': 'Excellent' if efficiency_score > 80 else 'Good' if efficiency_score > 60 else 'Standard',
-                'eco_impact': round((1000-prediction)/10, 1),
-                'sustainability_score': round((vehicle_stats['eco_rating'] + efficiency_score)/2, 1)
+                'eco_impact': round((1000 - prediction) / 10, 1),
+                'sustainability_score': round((vehicle_stats['eco_rating'] + efficiency_score) / 2, 1)
             }
         })
     except Exception as e:
